@@ -1,40 +1,31 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const he = require('he');
 
-const subs = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉'];
+const subs = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉', '₊', '₋'];
+const sups = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹', '⁺', '⁻'];
 
 /// Pull out subscript numbers and replace them with the unicode versions
-function replaceSubs(string) {
-    let matches = string.match(/<sub>(\d+)<\/sub>/g);
-    let gaps = string.split(/<sub>\d+<\/sub>/g);
-    let replace = [];
-    try {
-        if (matches.length > 0) {
-            matches.forEach(element => {
-                let numbers = element.match(/\d/g);
-                let swaps = [];
-                numbers.forEach(number => {
-                    swaps.push(subs[+number]);
-                });
-                replace.push(`<sub>${swaps.join('')}</sub>`);
-            });
-            let combined = "";
-            for (let i = 0; i < gaps.length; i++) {
-                combined += gaps[i];
-                if (replace[i])
-                combined += replace[i];
-            }
-            return (combined
-                .replace(/<sub>/g, '')
-                .replace(/<\/sub>/g, '') +
-                '\n-# ' + string
-                .replace(/<sub>/g, '')
-                .replace(/<\/sub>/g, ''));
-        } else {
-            return string;
-        }
-    } catch(e) {
-        return string;
-    }
+function sub(x) {
+    return x.split('').map(c =>
+        c === '+' ? subs[10] : c === '-' ? subs[11] : subs[+c]
+    ).join('');
+}
+
+function sup(x) {
+    return x.split('').map(c =>
+        c === '+' ? sups[10] : c === '-' ? sups[11] : sups[+c]
+    ).join('');
+}
+
+global.replaceSubs = (str) => {
+    let out = he.decode(str)
+        .replace(/<sub>([\d+\-]+)<\/sub>/g, (_, d) => sub(d))
+        .replace(/<sup>([\d+\-]+)<\/sup>/g, (_, d) => sup(d))
+        .replace(/([A-Za-z])(\d*)([+-])/g, (_, e, n, sign) => e + sup((n||'') + sign))
+        .replace(/·/g, ' · ')
+        .replace(/◻/g, '')
+        .replace(/<\/?sub>|<\/?sup>/g, '');
+    return out + `\n-# ${str.replace(/<\/?sub>|<\/?sup>/g, '')}`;
 }
 
 module.exports = {
@@ -81,7 +72,7 @@ module.exports = {
                     inline: true
                 })
             if (isvariety ? rep.mindat_formula : match.mindat_formula) {
-                let formula = replaceSubs(isvariety ? rep.mindat_formula : match.mindat_formula);
+                let formula = global.replaceSubs(isvariety ? rep.mindat_formula : match.mindat_formula);
                 embed.addFields({
                     name: 'Formula', value: formula.replaceAll('&middot;', ' · '), inline: true 
                 });

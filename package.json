@@ -22,6 +22,7 @@
     "discord.js": "^14.22.1",
     "dotenv": "^17.2.2",
     "errorlog": "^1.4.7",
-    "file-system-db": "^2.1.0"
+    "file-system-db": "^2.1.0",
+    "he": "^1.2.0"
   }
 }

@@ -15,8 +15,12 @@ global.version = packge.version;
 global.color = config.color;
 global.mindat = mindat;
 global.rubydb = new FSDB();
-global.client = new Client({ intents: 
-    [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent], partials: [Partials.Channel]});
+global.client = new Client({ intents: [
+    GatewayIntentBits.Guilds, 
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMessageReactions
+    ], partials: [Partials.Channel]});
 global.client.once(Events.ClientReady, client => {
     console.clear();
     // https://budavariam.github.io/asciiart-text/ - ANSI Shadow
@@ -120,7 +124,7 @@ global.client.on(Events.MessageCreate, async message => {
             });
         } else if (intcom('set_commands')) {
             await message.reply(`Enabling REST commands for guild with id ${content[1]}...`);
-            rest.put(Routes.applicationGuildCommands(global.client.user.id, content[1]), { body: global.commands }).then( async () => {
+            rest.put(Routes.applicationGuildCommands(global.client.user.id, content[1]), { body: global.local_commands }).then( async () => {
                 await message.channel.send((global.commands.length) + ' slash commands Updated');
             });
         } else if  (intcom('process') || intcom('info')) {
