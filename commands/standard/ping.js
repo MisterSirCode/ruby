@@ -1,7 +1,6 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
-    local: false,
 	data: new SlashCommandBuilder()
 		.setName('ping')
 		.setDescription('Get the current status of Ruby'),

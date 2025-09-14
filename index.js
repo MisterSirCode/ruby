@@ -15,7 +15,7 @@ global.rubydb = new FSDB();
 global.client = new Client({ intents: 
     [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent], partials: [Partials.Channel]});
 global.client.once(Events.ClientReady, client => {
-    console.clear();
+    //console.clear();
     // https://budavariam.github.io/asciiart-text/ - ANSI Shadow
     console.log(chalk.redBright(`
  ██████╗ ██╗   ██╗██████╗ ██╗   ██╗ 
@@ -28,6 +28,7 @@ global.client.once(Events.ClientReady, client => {
 	console.log(chalk.red(`Ruby Initialized! Logged in as ${client.user.tag}`));
 });
 
+// Formatter for converting seconds to a refined time string (HH:MM:SS)
 global.format_time = (seconds) => {
     function pad(s) {
         return (s < 10 ? '0' : '') + s;
@@ -50,11 +51,16 @@ commandFolders.forEach((folder) => {
     commandFiles.forEach((file) => {
         const filePath = path.join(categoryPath, file);
         const command = require(filePath);
-        if ('data' in command && 'execute' in command) {
-            global.commands.push(command.data.toJSON())
-            global.client.commands.set(command.data.name, command);
-        } else
-            console.log(`Command at ${filePath} is not configured correctly`);
+        try {
+            if ('data' in command && 'execute' in command) {
+                global.commands.push(command.data.toJSON());
+                global.client.commands.set(command.data.name, command);
+            } else
+                console.log(`Command at ${filePath} is not configured correctly`);
+        } catch(e) {
+            console.log(command.data);
+            console.log(e);
+        }
     });
 });
 
@@ -73,6 +79,7 @@ global.client.on(Events.InteractionCreate, async interaction => {
     }
 });
 
+// Handler for developer-only commands
 global.client.on(Events.MessageCreate, async message => {
     const txt = message.content;
     if (message.author.id === config.owner) {
