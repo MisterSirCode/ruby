@@ -18,9 +18,14 @@ global.rubydb = new FSDB();
 global.client = new Client({ intents: [
     GatewayIntentBits.Guilds, 
     GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildPresences,
     GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildMessageReactions
-    ], partials: [Partials.Channel]});
+    GatewayIntentBits.GuildMessageReactions ], partials: [
+    Partials.Message, 
+    Partials.Channel, 
+    Partials.Reaction,
+    Partials.User
+]});
 global.client.once(Events.ClientReady, client => {
     console.clear();
     // https://budavariam.github.io/asciiart-text/ - ANSI Shadow
@@ -138,6 +143,42 @@ global.client.on(Events.MessageCreate, async message => {
                     value: `Platform: ${process.platform} - V8 Mem: ${process.memoryUsage().heapUsed}/${process.memoryUsage().heapTotal} Bytes`
                 });
             await message.reply({ embeds: [logEmbed] });
+        }
+    }
+});
+
+// Reaction Roles
+global.client.on(Events.MessageReactionAdd, async (reaction, user) => {
+    if (reaction.partial)
+		try {
+			await reaction.fetch();
+		} catch (error) {
+			console.error('Something went wrong when fetching the message:', error);
+			return;
+		}
+    if (user.partial)
+		try {
+			await user.fetch();
+		} catch (error) {
+			console.error('Something went wrong when fetching the message:', error);
+			return;
+		}
+    if (reaction.message.guild) {
+        let guild = reaction.message.guild;
+        if (global.rubydb.has(`guilds.${guild.id}`)) {
+            let message = reaction.message;
+            if (global.rubydb.has(`guilds.${guild.id}.reactions.${message.id}`)) {
+                let react = reaction.emoji.toString();
+                if (react.length != 2)
+                    react = react.match(/\d+/g)[0];
+                if (global.rubydb.has(`guilds.${guild.id}.reactions.${message.id}.${react}`)) {
+                    guild.roles.fetch(global.rubydb.get(`guilds.${guild.id}.reactions.${message.id}.${react}`)).then(role => {
+                        guild.members.fetch({ user, force: true }).then(member => {
+                            member.roles.add(role);
+                        })
+                    })
+                }
+            }
         }
     }
 });

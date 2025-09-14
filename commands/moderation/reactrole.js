@@ -1,9 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
 
-function assignReactionRole(role, message, Emote) {
-    message.react(emote);
-}
-
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('reactrole')
@@ -49,15 +45,18 @@ module.exports = {
             let channel = interaction.channel;
             let guild = interaction.guild;
             channel.messages.fetch(message).then(async vermsg => {
-                if (emote.length > 14 && emote.length < 20)
-                    guild.emojis.fetch(emote).then(async veremt => {
-                        assignReactionRole(role, vermsg, emote);
+                if (emote.length > 14) {
+                    let fixed = emote.match(/\d+/g)[0];
+                    guild.emojis.fetch(fixed).then(async veremt => {
+                        global.rubydb.set(`guilds.${guild.id}.reactions.${message}.${emote}`, role.id);
+                        await vermsg.react(emote);
                         await interaction.reply({ content: `Assigned reaction role`, flags: MessageFlags.Ephemeral });
                     }).catch(async () => {
                         await interaction.reply({ content: 'Emote doesnt exist or bot does not have access to it' });
                     });
-                else if (emote.length == 2) {
-                    assignReactionRole(role, vermsg, emote);
+                } else if (emote.length == 2) {
+                        global.rubydb.set(`guilds.${guild.id}.reactions.${message}.${emote}`, role.id);
+                    await vermsg.react(emote);
                     await interaction.reply({ content: `Assigned reaction role`, flags: MessageFlags.Ephemeral });
                 } else await interaction.reply({ content: 'Emote doesnt exist or is not recognized' });
             }).catch(async () => {
