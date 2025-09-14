@@ -26,7 +26,7 @@ module.exports = {
         const guild = interaction.guild;
         const cret = guild.createdAt;
         guild.fetchOwner().then((owner) => {
-            const profileEmbed = new EmbedBuilder()
+            const embed = new EmbedBuilder()
                 .setAuthor({
                     name: guild.name, 
                     iconURL: guild.iconURL()
@@ -44,7 +44,7 @@ module.exports = {
                 })
                 .setColor(global.color);
             if (guild.description) profileEmbed.setDescription(`${guild.id}\n\n${guild.description}`)
-            interaction.reply({ embeds: [profileEmbed] }, { 'allowed_mentions': { 'parse': [] } });
+            interaction.reply({ embeds: [embed] }, { 'allowed_mentions': { 'parse': [] } });
         });
 	},
 };

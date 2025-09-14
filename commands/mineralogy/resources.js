@@ -1,4 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder, MessageFlags } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -6,10 +6,10 @@ module.exports = {
 		.setDescription('Get some useful links and information about mineralogy'),
 	async execute(interaction) {
 		const content = global.rubydb.get('commands.resource.content');
-        const helpEmbed = new EmbedBuilder()
+        const embed = new EmbedBuilder()
             .setTitle(`Mineralogy Resources`)
 			.setColor(global.color)
-			.setDescription(content);
-		await interaction.reply({ embeds: [helpEmbed] });
+			.setDescription(content.replaceAll("\\n", "\n"));
+		await interaction.reply({ embeds: [embed] });
 	},
 };

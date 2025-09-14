@@ -6,7 +6,7 @@ module.exports = {
 		.setDescription('Get the current status of Ruby'),
 	async execute(interaction) {
 		const user = global.client.user;
-		const pingEmbed = new EmbedBuilder()
+		const embed = new EmbedBuilder()
 			.setAuthor({ 
 				name: `${user.username}#${user.discriminator}`, 
 				iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
@@ -20,11 +20,11 @@ module.exports = {
 				value: `${Math.round(global.client.ws.ping)}ms`
 			})
 			.setColor(global.color);
-		let sent = await interaction.reply({ embeds: [pingEmbed] });
-		pingEmbed.addFields({
+		let sent = await interaction.reply({ embeds: [embed] });
+		embed.addFields({
 			name: 'Roundtrip Ping',
 			value: `${sent.createdTimestamp - interaction.createdTimestamp}ms`
 		})
-		interaction.editReply({ embeds: [pingEmbed] });
+		interaction.editReply({ embeds: [embed] });
 	},
 };

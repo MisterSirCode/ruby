@@ -1,21 +1,32 @@
-const { EmbedBuilder, SlashCommandBuilder, MessageFlags, PermissionFlagsBits } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('setresources')
 		.setDescription('Set the information for the /resources command')
+		.addBooleanOption(option => option
+			.setName('acquire')
+			.setDescription('Return the raw content of the current resources')
+			.setRequired(false))
 		.addStringOption(option => option
 			.setName('content')
 			.setDescription('Raw content to be posted')
-			.setRequired(true))
+			.setRequired(false))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
 	async execute(interaction) {
-        const option = interaction.options.getString('content');
-		global.rubydb.set('commands.resource.content', option || '');
-        const helpEmbed = new EmbedBuilder()
-            .setTitle(`Set Resource Command`)
-			.setColor(global.color)
-			.setDescription(option);
-		await interaction.reply({ embeds: [helpEmbed] });
+        const embed = new EmbedBuilder();
+        const content = interaction.options.getString('content');
+        const acquire = interaction.options.getBoolean('acquire');
+		if (acquire) {
+			embed.setTitle(`Current Resources (Raw)`)
+				.setColor(global.color)
+				.setDescription(`\`${global.rubydb.get('commands.resource.content').replaceAll("\\n", "\n")}\``);
+		} else {
+			global.rubydb.set('commands.resource.content', content || '');
+			embed.setTitle(`Set Resource Command`)
+				.setColor(global.color)
+				.setDescription(content);
+		}
+		await interaction.reply({ embeds: [embed] });
 	},
 };

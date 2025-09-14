@@ -5,17 +5,17 @@ module.exports = {
 		.setName('help')
 		.setDescription('List all usable commands'),
 	async execute(interaction) {
-        const helpEmbed = new EmbedBuilder()
+        const embed = new EmbedBuilder()
             .setTitle(`${global.client.user.username}\'s Commands`)
 			.setColor(global.color);
 			global.commands.forEach((command) => {
 				if (command.EXCLUDE) return;
-				helpEmbed.addFields({
+				embed.addFields({
 					name: '/' + command.name, 
 					value: command.description, 
 					inline: true
 				});
 			});
-		await interaction.reply({ embeds: [helpEmbed], flags: MessageFlags.Ephemeral });
+		await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 	},
 };

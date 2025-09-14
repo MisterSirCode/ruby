@@ -32,7 +32,7 @@ module.exports = {
         const memb = specMem ? specMem : interaction.member;
         const cret = user.createdAt;
         const join = memb.joinedAt;
-        const profileEmbed = new EmbedBuilder()
+        const embed = new EmbedBuilder()
             .setAuthor({ 
                 name: `Profile of ${user.displayName}`, 
                 iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
@@ -48,17 +48,17 @@ module.exports = {
             })
             .setColor(global.color);
         const flags = user.flags;
-        if (flags.toArray().length > 0) profileEmbed.addFields({
+        if (flags.toArray().length > 0) embed.addFields({
             name: 'Special Flags',
             value: `${flags.toArray().join(', ')}`
         });
         // let tmpu = await user.fetch({ force: true });
-        // if (tmpu.id) profileEmbed.setColor(tmpu.hexAccentColor == null ? global.color : tmpu.hexAccentColor);
+        // if (tmpu.id) embed.setColor(tmpu.hexAccentColor == null ? global.color : tmpu.hexAccentColor);
         if (user.id == global.botOwner)
-            profileEmbed.setFooter({
+            embed.setFooter({
                 text: 'Owner of ' + global.client.user.username,
                 iconURL: ''
             });
-        interaction.reply({ embeds: [profileEmbed] });
+        interaction.reply({ embeds: [embed] });
 	},
 };

@@ -3,6 +3,7 @@ const { FSDB } = require('file-system-db');
 const { Client, Collection, Events, GatewayIntentBits, MessageFlags, REST, Routes, Partials, EmbedBuilder } = require('discord.js');
 const { default: chalk } = require('chalk');
 const config = require('./config.json');
+const mindat = require('./mindat.json');
 const path = require('path');
 const rest = new REST({ version: '10' }).setToken(process.env.RUBYPASS);
 const fs = require('fs');
@@ -11,6 +12,7 @@ const fs = require('fs');
 // Initialization
 global.version = config.version;
 global.color = config.color;
+global.mindat = mindat;
 global.rubydb = new FSDB();
 global.client = new Client({ intents: 
     [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent], partials: [Partials.Channel]});
@@ -58,7 +60,6 @@ commandFolders.forEach((folder) => {
             } else
                 console.log(`Command at ${filePath} is not configured correctly`);
         } catch(e) {
-            console.log(command.data);
             console.log(e);
         }
     });
