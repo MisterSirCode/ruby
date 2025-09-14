@@ -14,6 +14,7 @@ module.exports = {
 			.setRequired(false))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
 	EXCLUDE: true,
+	LOCAL: true,
 	async execute(interaction) {
         const embed = new EmbedBuilder();
         const content = interaction.options.getString('content');
