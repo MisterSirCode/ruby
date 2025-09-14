@@ -13,6 +13,7 @@ module.exports = {
 			.setDescription('Raw content to be posted')
 			.setRequired(false))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
+	EXCLUDE: true,
 	async execute(interaction) {
         const embed = new EmbedBuilder();
         const content = interaction.options.getString('content');
@@ -20,7 +21,7 @@ module.exports = {
 		if (acquire) {
 			embed.setTitle(`Current Resources (Raw)`)
 				.setColor(global.color)
-				.setDescription(`\`${global.rubydb.get('commands.resource.content').replaceAll("\\n", "\n")}\``);
+				.setDescription(`\`\`\`${global.rubydb.get('commands.resource.content')}\`\`\``);
 		} else {
 			global.rubydb.set('commands.resource.content', content || '');
 			embed.setTitle(`Set Resource Command`)

@@ -54,7 +54,7 @@ module.exports = {
                 break;
             }
         }
-        if (match.name) {
+        if (match) {
             let embed = new EmbedBuilder()
                 .setTitle(`Information about ${match.name}`)
                 .setColor(global.color)

@@ -8,14 +8,15 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setTitle(`${global.client.user.username}\'s Commands`)
 			.setColor(global.color);
-			global.commands.forEach((command) => {
-				if (command.EXCLUDE) return;
-				embed.addFields({
-					name: '/' + command.name, 
-					value: command.description, 
-					inline: true
-				});
+			global.client.commands.forEach((command) => {
+				if (!command.EXCLUDE) {
+                    embed.addFields({
+                        name: '/' + command.data.name, 
+                        value: command.data.description, 
+                        inline: true
+                    });
+                }
 			});
-		await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+		await interaction.reply({ embeds: [embed] });
 	},
 };
