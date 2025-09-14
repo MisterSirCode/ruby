@@ -29,10 +29,10 @@ function replaceSubs(string) {
                 .replace(/<sub>/g, '')
                 .replace(/<\/sub>/g, ''));
         } else {
-            return string;
+            return string.replace(/&middot;/g, '·');
         }
     } catch(e) {
-        return string;
+        return string.replace(/&middot;/g, '·');;
     }
 }
 
