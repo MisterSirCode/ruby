@@ -33,7 +33,6 @@ module.exports = {
                 .setDescription('Message ID to remove from')))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
     EXCLUDE: true,
-    LOCAL: true,
 	async execute(interaction) {
         const embed = new EmbedBuilder();
         let ops = interaction.options;

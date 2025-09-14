@@ -183,5 +183,17 @@ global.client.on(Events.MessageReactionAdd, async (reaction, user) => {
     }
 });
 
+// Autorole
+global.client.on(Events.GuildMemberAdd, async (member) => {
+    let guild = member.guild;
+    if (global.rubydb.has(`guilds.${guild.id}`)) {
+        if (global.rubydb.has(`guilds.${guild.id}.autorole`)) {
+            guild.roles.fetch(global.rubydb.get(`guilds.${guild.id}.autorole`)).then(role => {
+                member.roles.add(role);
+            })
+        }
+    }
+});
+
 // Login
 global.client.login(process.env.RUBYPASS);
