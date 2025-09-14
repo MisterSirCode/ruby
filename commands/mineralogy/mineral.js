@@ -47,6 +47,7 @@ module.exports = {
 		const name = ("" + interaction.options.getString('species')).toLowerCase();
         const mindat = global.mindat;
         let match;
+        let isvariety = false;
         for (let i = 0; i < mindat.length; i++) {
             let mineral = mindat[i];
             if ((mineral.name.toLowerCase() == name) || (mineral.id == name)) {
@@ -54,34 +55,54 @@ module.exports = {
                 break;
             }
         }
+        let rep;
+        if (match.entrytype == 2) {
+            isvariety = true;
+            for (let i = 0; i < mindat.length; i++) {
+                let mineral = mindat[i];
+                if ((mineral.id == match.varietyof)) {
+                    rep = mineral;
+                    break;
+                }
+            }
+        }
         if (match) {
+            let desc = (isvariety ? 
+                    (match.aboutname ? match.aboutname : rep.description_short) : 
+                    match.description_short);
             let embed = new EmbedBuilder()
-                .setTitle(`Information about ${match.name}`)
+                .setTitle(`Information about ${isvariety ? rep.name + ' var ' + match.name : match.name}`)
                 .setColor(global.color)
-                .setDescription(match.description_short || "")
+                .setDescription(desc.replace(/<m>|<\/m>/g, ''))
                 .addFields({
                     name: 'View on Mindat', 
                     value: `[Mindat.org <:mindat:1416641235799638026>](https://mindat.org/min-${match.id}.html)`,
                     inline: true
                 })
-            if (match.mindat_formula) {
-                let formula = replaceSubs(match.mindat_formula);
-                embed.addFields({ 
+            if (isvariety ? rep.mindat_formula : match.mindat_formula) {
+                let formula = replaceSubs(isvariety ? rep.mindat_formula : match.mindat_formula);
+                embed.addFields({
                     name: 'Formula', value: formula, inline: true 
                 });
             }
-            if (match.csystem) {
+            if (isvariety ? rep.csystem : match.csystem) {
                 embed.addFields({
                     name: 'Crystal System', 
-                    value: `${match.csystem}\n${match.opticaltype ? '(' + match.opticalsign + match.opticaltype + ')' : ''}`, 
+                    value: `${isvariety ? rep.csystem : match.csystem}\n${
+                        (isvariety ? rep.opticaltype : match.opticaltype) ? '(' + 
+                        (isvariety ? rep.opticalsign : match.opticalsign) + 
+                        (isvariety ? rep.opticaltype : match.opticaltype) + ')' : ''}`, 
                     inline: true
                 })
             }
-            if (match.hardtype > 0) {
+            if (isvariety ? rep.hardtype : match.hardtype > 0) {
+                let hardtype = isvariety ? rep.hardtype : match.hardtype;
+                let hmax = isvariety ? rep.hmax : match.hmax;
+                let hmin = isvariety ? rep.hmin : match.hmin;
                 embed.addFields({
                     name: 'Hardness',
-                    value: (match.hardtype == 3 | match.hardtype == 4 ? 'Mohs ' : '') +
-                        (match.hmax > match.hmin ? match.hmin + '-' + match.hmax : match.hmin),
+                    value: (hardtype == 3 | hardtype == 4 ? 'Mohs ' : '') +
+                        (hmax > hmin ? hmin + '-' + hmax : hmin),
                     inline: true
                 })
             }
