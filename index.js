@@ -86,8 +86,8 @@ global.client.on(Events.MessageCreate, async message => {
     if (message.author.id === config.owner) {
         let botname = global.client.user.username.toLowerCase();
         let intcom = (command) => txt.startsWith(botname + '.' + command);
-        if (intcom('eval') || intcom('evalc')) {
             const content = txt.split(' ');
+        if (intcom('eval') || intcom('evalc')) {
             try {
                 content.shift();
                 // const evalText = Array.isArray(content) ? content.join(' ') : content;
@@ -114,6 +114,11 @@ global.client.on(Events.MessageCreate, async message => {
                 rest.put(Routes.applicationGuildCommands(global.client.user.id, config.primary_guild), { body: [] }).then( async () => {
                     await message.channel.send((global.commands.length) + ' slash commands Deleted');
                 });
+            });
+        } else if (intcom('set_commands')) {
+            await message.reply(`Enabling REST commands for guild with id ${content[1]}...`);
+            rest.put(Routes.applicationGuildCommands(global.client.user.id, content[1]), { body: global.commands }).then( async () => {
+                await message.channel.send((global.commands.length) + ' slash commands Updated');
             });
         } else if  (intcom('process') || intcom('info')) {
             let uptime = global.format_time(process.uptime());
