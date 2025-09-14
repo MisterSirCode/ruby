@@ -2,6 +2,7 @@ require('dotenv').config();
 const { FSDB } = require('file-system-db');
 const { Client, Collection, Events, GatewayIntentBits, MessageFlags, REST, Routes, Partials, EmbedBuilder } = require('discord.js');
 const { default: chalk } = require('chalk');
+const packge = require('./package.json');
 const config = require('./config.json');
 const mindat = require('./mindat.json');
 const path = require('path');
@@ -10,14 +11,14 @@ const fs = require('fs');
 
 
 // Initialization
-global.version = config.version;
+global.version = packge.version;
 global.color = config.color;
 global.mindat = mindat;
 global.rubydb = new FSDB();
 global.client = new Client({ intents: 
     [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent], partials: [Partials.Channel]});
 global.client.once(Events.ClientReady, client => {
-    //console.clear();
+    console.clear();
     // https://budavariam.github.io/asciiart-text/ - ANSI Shadow
     console.log(chalk.redBright(`
  ██████╗ ██╗   ██╗██████╗ ██╗   ██╗ 
@@ -25,9 +26,9 @@ global.client.once(Events.ClientReady, client => {
  ██████╔╝██║   ██║██████╔╝ ╚████╔╝ 
  ██╔══██╗██║   ██║██╔══██╗  ╚██╔╝  
  ██║  ██║╚██████╔╝██████╔╝   ██║   
- ╚═╝  ╚═╝ ╚═════╝ ╚═════╝    ╚═╝   V${config.version}
+ ╚═╝  ╚═╝ ╚═════╝ ╚═════╝    ╚═╝ V${packge.version}
     `))
-	console.log(chalk.red(`Ruby Initialized! Logged in as ${client.user.tag}`));
+	console.log(chalk.red(` > Ruby Initialized - Logged in as ${client.user.tag}`));
 });
 
 // Formatter for converting seconds to a refined time string (HH:MM:SS)
@@ -42,7 +43,7 @@ global.format_time = (seconds) => {
 }
 
 // Handle Commands
-global.global_commands = [];
+global.local_commands = [];
 global.commands = [];
 global.client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
@@ -55,8 +56,10 @@ commandFolders.forEach((folder) => {
         const command = require(filePath);
         try {
             if ('data' in command && 'execute' in command) {
-                global.commands.push(command.data.toJSON());
                 global.client.commands.set(command.data.name, command);
+                global.local_commands.push(command.data.toJSON());
+                if (command.LOCAL)
+                    global.commands.push(command.data.toJSON());
             } else
                 console.log(`Command at ${filePath} is not configured correctly`);
         } catch(e) {
@@ -103,7 +106,7 @@ global.client.on(Events.MessageCreate, async message => {
             }
         } else if (intcom('update_commands')) {
             await message.reply(`Reloading REST commands...`);
-                rest.put(Routes.applicationGuildCommands(global.client.user.id, config.primary_guild), { body: global.commands }).then( async () => {
+                rest.put(Routes.applicationGuildCommands(global.client.user.id, config.primary_guild), { body: global.local_commands }).then( async () => {
                     rest.put(Routes.applicationCommands(global.client.user.id), { body: global.global_commands }).then( async (e) => {
                         await message.reply((global.commands.length) + ' slash commands Updated');
                     });

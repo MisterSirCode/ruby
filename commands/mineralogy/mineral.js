@@ -2,6 +2,7 @@ const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 
 const subs = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉'];
 
+/// Pull out subscript numbers and replace them with the unicode versions
 function replaceSubs(string) {
     let matches = string.match(/<sub>(\d+)<\/sub>/g);
     let gaps = string.split(/<sub>\d+<\/sub>/g);
@@ -29,10 +30,10 @@ function replaceSubs(string) {
                 .replace(/<sub>/g, '')
                 .replace(/<\/sub>/g, ''));
         } else {
-            return string.replace(/&middot;/g, '·');
+            return string;
         }
     } catch(e) {
-        return string.replace(/&middot;/g, '·');;
+        return string;
     }
 }
 
@@ -55,18 +56,18 @@ module.exports = {
                 break;
             }
         }
-        let rep;
-        if (match.entrytype == 2) {
-            isvariety = true;
-            for (let i = 0; i < mindat.length; i++) {
-                let mineral = mindat[i];
-                if ((mineral.id == match.varietyof)) {
-                    rep = mineral;
-                    break;
+        if (match) {
+            let rep;
+            if (match.entrytype == 2) {
+                isvariety = true;
+                for (let i = 0; i < mindat.length; i++) {
+                    let mineral = mindat[i];
+                    if ((mineral.id == match.varietyof)) {
+                        rep = mineral;
+                        break;
+                    }
                 }
             }
-        }
-        if (match) {
             let desc = (isvariety ? 
                     (match.aboutname ? match.aboutname : rep.description_short) : 
                     match.description_short);
@@ -82,7 +83,7 @@ module.exports = {
             if (isvariety ? rep.mindat_formula : match.mindat_formula) {
                 let formula = replaceSubs(isvariety ? rep.mindat_formula : match.mindat_formula);
                 embed.addFields({
-                    name: 'Formula', value: formula, inline: true 
+                    name: 'Formula', value: formula.replaceAll('&middot;', ' · '), inline: true 
                 });
             }
             if (isvariety ? rep.csystem : match.csystem) {
