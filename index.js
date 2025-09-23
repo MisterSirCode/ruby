@@ -188,6 +188,7 @@ global.client.on(Events.GuildMemberAdd, async (member) => {
     let guild = member.guild;
     if (global.rubydb.has(`guilds.${guild.id}`)) {
         if (global.rubydb.has(`guilds.${guild.id}.autorole`)) {
+            console.log('Autorole enabled and triggered for ' + guild.name);
             guild.roles.fetch(global.rubydb.get(`guilds.${guild.id}.autorole`)).then(role => {
                 member.roles.add(role);
             })
