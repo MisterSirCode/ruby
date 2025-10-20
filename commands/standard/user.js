@@ -35,7 +35,7 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setAuthor({ 
                 name: `Profile of ${user.displayName}`, 
-                iconURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+                iconURL: member.displayAvatarURL({ format: 'png', size: 1024 })
             })
             .setThumbnail(user.avatarURL())
             .setDescription(`${user.username}\n-# ${user.id}`)
