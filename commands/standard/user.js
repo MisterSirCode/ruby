@@ -35,7 +35,7 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setAuthor({ 
                 name: `Profile of ${user.displayName}`, 
-                iconURL: member.displayAvatarURL({ format: 'png', size: 1024 })
+                iconURL: specMem.displayAvatarURL({ format: 'jpg', size: 1024 })
             })
             .setThumbnail(user.avatarURL())
             .setDescription(`${user.username}\n-# ${user.id}`)
